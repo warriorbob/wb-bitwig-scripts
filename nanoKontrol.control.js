@@ -5,13 +5,12 @@ loadAPI(1);
 
 host.defineController("WB", "nanoKontrol", "1.0", "eb96eab0-bf97-11e3-8a33-0800200c9a66");
 host.defineMidiPorts(1,1);	// One in, one out
-// Register the name so Bitwig can find it on a scan,
 host.addDeviceNameBasedDiscoveryPair(["nanoKONTROL SLIDER/KNOB"], ["nanoKONTROL CTRL"]); //I have no idea if this works
 // No host.defineSysexIdentityReply because I don't know how to find the Sysex response to pass it
 
 //"8 knobs" CCs
-var LOW_CC = 14;
-var HIGH_CC = 21;
+var PARAM_CCs = [14, 15, 16, 17, 18, 19, 20, 21];
+
 
 function init()
 {
@@ -42,7 +41,7 @@ function onMidi(status, data1, data2)
 		if(is8Knob(data1))
 		{
 			//Update appropriate 8knob parameter
-			var index = data1 - LOW_CC;
+			var index = PARAM_CCs.indexOf(data1);
 			cursorDevice.getParameter(index).set(data2, 128);
 			//TODO: Figure out why "set" doesn't show up in the docs		
 		}
@@ -79,5 +78,5 @@ function exit()
 
 function is8Knob(cc)
 {
-	return cc >= LOW_CC && cc <= HIGH_CC;
+	return PARAM_CCs.indexOf(cc) != -1;
 }
