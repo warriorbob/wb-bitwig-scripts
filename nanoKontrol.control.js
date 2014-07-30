@@ -42,8 +42,7 @@ function onMidi(status, data1, data2)
 		{
 			//Update appropriate 8knob parameter
 			var index = PARAM_CCs.indexOf(data1);
-			cursorDevice.getParameter(index).set(data2, 128);
-			//TODO: Figure out why "set" doesn't show up in the docs		
+			cursorDevice.getParameter(index).set(data2, 128);	
 		}
 		else if (data1 === 47) //"back"
 		{
