@@ -26,7 +26,7 @@ function init()
 	for (var i = 0; i < 8; i++)
 	{
 		//Mark the ith macro knob on the selected device with pretty map colors in the GUI
-		cursorDevice.getMacro(i).getAmount().setIndication(true);
+		cursorDevice.getParameter(i).setIndication(true);
 	}
 
 	//userControls is populated so that all CCs are freely mappable.
@@ -50,7 +50,7 @@ function onMidi(status, data1, data2)
 		{
 			//Update appropriate 8knob macro
 			var index = data1 - LOW_CC;
-			cursorDevice.getMacro(index).getAmount().set(data2, 128);
+			cursorDevice.getParameter(index).set(data2, 128);
 			//TODO: Figure out why "set" doesn't show up in the docs		
 		}
 		else if (data1 === 47) //"back"
