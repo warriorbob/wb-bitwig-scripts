@@ -9,7 +9,8 @@ host.addDeviceNameBasedDiscoveryPair(["nanoKONTROL SLIDER/KNOB"], ["nanoKONTROL 
 // No host.defineSysexIdentityReply because I don't know how to find the Sysex response to pass it
 
 //"8 knobs" CCs
-var PARAM_CCs = [14, 15, 16, 17, 18, 19, 20, 21];
+var PARAM_CCs = [14, 15, 16, 17, 18, 19, 20, 21];	//Knobs
+var MACRO_CCs = [2, 3, 4, 5, 6, 8, 9, 12]; 	//Faders
 
 
 function init()
@@ -22,8 +23,9 @@ function init()
 	
 	for (var i = 0; i < 8; i++)
 	{
-		//Mark the ith parameter on the selected device's current bank with pretty map colors in the GUI
+		//Mark the ith parameter & macro on the selected device's current bank with pretty map colors in the GUI
 		cursorDevice.getParameter(i).setIndication(true);
+		cursorDevice.getMacro(i).getAmount().setIndication(true);
 	}
 
 	//userControls is populated so that all CCs are freely mappable.
@@ -38,11 +40,17 @@ function onMidi(status, data1, data2)
 	// TODO: filter by MIDI channel. Currently this just checks CC#.
 	if(isChannelController(status))
 	{
-		if(is8Knob(data1))
+		if(isParamCC(data1))
 		{
-			//Update appropriate 8knob parameter
+			//Update appropriate device parameter
 			var index = PARAM_CCs.indexOf(data1);
 			cursorDevice.getParameter(index).set(data2, 128);	
+		}
+		else if (isMacroCC(data1))
+		{
+			//Update appropriate macro parameter
+			var index = MACRO_CCs.indexOf(data1);
+			cursorDevice.getMacro(index).getAmount().set(data2, 128);
 		}
 		else if (data1 === 47) //"back"
 		{
@@ -60,7 +68,7 @@ function onMidi(status, data1, data2)
 		{
 			cursorDevice.nextParameterPage();
 		}
-		else if (!is8Knob(data1))
+		else
 		{
 			//Update non-8 mapping if any
 			userControls.getControl(data1).set(data2, 128);
@@ -75,7 +83,12 @@ function exit()
 
 // Helper functions ----
 
-function is8Knob(cc)
+function isParamCC(cc)
 {
 	return PARAM_CCs.indexOf(cc) != -1;
+}
+
+function isMacroCC(cc)
+{
+	return MACRO_CCs.indexOf(cc) != -1;
 }
