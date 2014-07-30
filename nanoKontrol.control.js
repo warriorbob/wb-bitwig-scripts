@@ -20,23 +20,16 @@ function init()
 	noteInput = host.getMidiInPort(0).createNoteInput("nanoKnobsLOL", "??????");
 	noteInput.setShouldConsumeEvents(false); //So our noteInput-masekd stuff gets sent to onMidi
 	cursorDevice = host.createCursorDevice();	//Is this a view or an observer?
-	//cursorTrack = host.createCursorTrackSection(3, 0);
-	//primaryInstrument = cursorTrack.getPrimaryInstrument();
-
+	
 	for (var i = 0; i < 8; i++)
 	{
-		//Mark the ith macro knob on the selected device with pretty map colors in the GUI
+		//Mark the ith parameter on the selected device's current bank with pretty map colors in the GUI
 		cursorDevice.getParameter(i).setIndication(true);
 	}
 
 	//userControls is populated so that all CCs are freely mappable.
 	var allCCs = 128
 	userControls = host.createUserControlsSection(allCCs);
-
-	for (var i = 0; i < allCCs; i++)
-	{
-		//userControls.getControl(i).setLabel("CC" + i);
-	}
 }
 
 function onMidi(status, data1, data2)
@@ -48,7 +41,7 @@ function onMidi(status, data1, data2)
 	{
 		if(is8Knob(data1))
 		{
-			//Update appropriate 8knob macro
+			//Update appropriate 8knob parameter
 			var index = data1 - LOW_CC;
 			cursorDevice.getParameter(index).set(data2, 128);
 			//TODO: Figure out why "set" doesn't show up in the docs		
