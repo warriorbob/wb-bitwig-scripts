@@ -54,6 +54,14 @@ function onMidi(status, data1, data2)
 		{
 			cursorDevice.selectNext();
 		}
+		else if (data1 === 49 && data2 == 127) //"loop"
+		{
+			cursorDevice.previousParameterPage();
+		}
+		else if (data1 === 44 && data2 == 127) //"record"
+		{
+			cursorDevice.nextParameterPage();
+		}
 		else if (!is8Knob(data1))
 		{
 			//Update non-8 mapping if any
