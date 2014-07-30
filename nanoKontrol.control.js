@@ -19,7 +19,7 @@ function init()
 
 	noteInput = host.getMidiInPort(0).createNoteInput("nanoKnobsLOL", "??????");
 	noteInput.setShouldConsumeEvents(false); //So our noteInput-masekd stuff gets sent to onMidi
-	cursorDevice = host.createCursorDeviceSection(8);	//Is this a view or an observer?
+	cursorDevice = host.createCursorDevice();	//Is this a view or an observer?
 	//cursorTrack = host.createCursorTrackSection(3, 0);
 	//primaryInstrument = cursorTrack.getPrimaryInstrument();
 
