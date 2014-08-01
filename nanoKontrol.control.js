@@ -10,7 +10,8 @@ host.addDeviceNameBasedDiscoveryPair(["nanoKONTROL SLIDER/KNOB"], ["nanoKONTROL 
 
 //"8 knobs" CCs
 var PARAM_CCs = [14, 15, 16, 17, 18, 19, 20, 21];	//Knobs
-var MACRO_CCs = [2, 3, 4, 5, 6, 8, 9, 12]; 	//Faders
+var MACRO_CCs = [2, 3, 4, 5, 6, 8, 9, 12]; 			//Faders
+var MAPPER_CCs = [23, 24, 25, 26, 27, 28, 29, 30]	//Top row buttons
 
 
 function init()
@@ -18,7 +19,7 @@ function init()
 	host.getMidiInPort(0).setMidiCallback(onMidi);
 
 	noteInput = host.getMidiInPort(0).createNoteInput("nanoKnobsLOL", "??????");
-	noteInput.setShouldConsumeEvents(false); //So our noteInput-masekd stuff gets sent to onMidi
+	noteInput.setShouldConsumeEvents(false); //So our noteInput-masked stuff gets sent to onMidi
 	cursorDevice = host.createCursorDevice();	//Is this a view or an observer?
 	
 	for (var i = 0; i < 8; i++)
@@ -51,6 +52,11 @@ function onMidi(status, data1, data2)
 			//Update appropriate macro parameter
 			var index = MACRO_CCs.indexOf(data1);
 			cursorDevice.getMacro(index).getAmount().set(data2, 128);
+		}
+		else if (isMapperCC(data1))
+		{
+			var index = MAPPER_CCs.indexOf(data1);
+			cursorDevice.getMacro(index).getModulationSource().toggleIsMapping();
 		}
 		else if (data1 === 47) //"back"
 		{
@@ -91,4 +97,9 @@ function isParamCC(cc)
 function isMacroCC(cc)
 {
 	return MACRO_CCs.indexOf(cc) != -1;
+}
+
+function isMapperCC(cc)
+{
+	return MAPPER_CCs.indexOf(cc) != -1;
 }
