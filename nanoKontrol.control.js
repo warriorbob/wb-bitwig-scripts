@@ -36,7 +36,7 @@ function init()
 
 function onMidi(status, data1, data2)
 {
-	println("onMidi(" + status + "," + data1 + "," + data2 +")");	//Debug out
+	println("onMidi(" + status + "," + data1 + "," + data2 +") Ch " + getMidiChannel(status));	//Debug out
 
 	// TODO: filter by MIDI channel. Currently this just checks CC#.
 	if(isChannelController(status))
@@ -103,3 +103,14 @@ function isMapperCC(cc)
 {
 	return MAPPER_CCs.indexOf(cc) != -1;
 }
+
+function getMidiChannel(status)
+{
+	return (status & 0x0f) + 1
+}
+/*
+var dec = 167    // Chan 8 Polyphonic Aftertouch
+
+var mb = dec & 0x0f
+print(mb);         //prints 7
+*/
