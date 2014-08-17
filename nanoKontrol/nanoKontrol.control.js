@@ -8,24 +8,41 @@ host.defineMidiPorts(1,1);	// One in, one out
 host.addDeviceNameBasedDiscoveryPair(["nanoKONTROL SLIDER/KNOB"], ["nanoKONTROL CTRL"]); //I have no idea if this works
 // No host.defineSysexIdentityReply because I don't know how to find the Sysex response to pass it
 
+//Fake enums
+var NOTE = 0;
+var CC = 1;
+
 var PARAM_CCs = [
-14, 15, 16, 17, 
-18, 19, 20, 21
+[CC,9,14],
+[CC,9,15],
+[CC,9,16],
+[CC,9,17], 
+[CC,9,18],
+[CC,9,19],
+[CC,9,20],
+[CC,9,21]
 ];	//Knobs
 
-// var MACRO_CCs = [
-// 2, 3, 4, 5, 
-// 6, 8, 9, 12
-// ]; 	//Faders
-
 var MACRO_CCs = [
-[9,2], [9,3], [9,4], [9,5], 
-[9,6], [9,8], [9,9], [9,12]
+[CC,9,2], 
+[CC,9,3],
+[CC,9,4],
+[CC,9,5], 
+[CC,9,6],
+[CC,9,8],
+[CC,9,9],
+[CC,9,12]
 ]; 	//Faders
 
 var MAPPER_CCs = [
-23, 24, 25, 26, 
-27, 28, 29, 30
+[CC,9,23],
+[CC,9,24],
+[CC,9,25],
+[CC,9,26],
+[CC,9,27],
+[CC,9,28],
+[CC,9,29],
+[CC,9,30]
 ]	//Top row buttons
 
 
@@ -54,48 +71,59 @@ function onMidi(status, data1, data2)
 	println("onMidi(" + status + "," + data1 + "," + data2 +") Ch " + getMidiChannel(status));	//Debug out
 
 	var chan = getMidiChannel(status);
-
-	// TODO: filter by MIDI channel. Currently this just checks CC#.
-	if(isChannelController(status))
+	var type;
+	if (isChannelController(status))
 	{
-		if(isParamCC(data1))
-		{
-			//Update appropriate device parameter
-			var index = PARAM_CCs.indexOf(data1);
-			cursorDevice.getParameter(index).set(data2, 128);	
-		}
-		else if (isMacroCC(chan, data1))
-		{
-			//Update appropriate macro parameter
-			var index = MACRO_CCs.indexOf(data1);
-			cursorDevice.getMacro(index).getAmount().set(data2, 128);
-		}
-		else if (isMapperCC(data1))
-		{
-			var index = MAPPER_CCs.indexOf(data1);
-			cursorDevice.getMacro(index).getModulationSource().toggleIsMapping();
-		}
-		else if (data1 === 47) //"back"
-		{
-			cursorDevice.selectPrevious();
-		}
-		else if (data1 === 48) //"forward"
-		{
-			cursorDevice.selectNext();
-		}
-		else if (data1 === 49 && data2 == 127) //"loop"
-		{
-			cursorDevice.previousParameterPage();
-		}
-		else if (data1 === 44 && data2 == 127) //"record"
-		{
-			cursorDevice.nextParameterPage();
-		}
-		else
-		{
-			//Update non-8 mapping if any
-			userControls.getControl(data1).set(data2, 128);
-		}
+		type = CC;
+	}
+	else if (!isChannelController(status))	// HOW DO I FIGURE OUT IF IT'S A NOTE???
+	{
+		type = NOTE;
+	}
+
+	var midiMessage = [type, chan, data1];
+
+	var param_index = messageIndex(PARAM_CCs, midiMessage);
+	var macro_index = messageIndex(MACRO_CCs, midiMessage);
+	var mapper_index = messageIndex(MAPPER_CCs, midiMessage);
+
+	if(param_index != -1)
+	{
+		//Update appropriate device parameter
+		cursorDevice.getParameter(param_index).set(data2, 128);
+	}
+	else if (macro_index != -1)
+	{
+		//Update appropriate macro parameter
+		cursorDevice.getMacro(macro_index).getAmount().set(data2, 128);
+	}
+	else if (mapper_index != -1)
+	{
+		//Toggle appropriate macro modulation source
+		// TODO: fix "toggle" confusion - right now it assumes that you get one call on press and another on unpress,
+		// but this isn't guaranteed to happen
+		cursorDevice.getMacro(mapper_index).getModulationSource().toggleIsMapping()
+	}
+	else if (data1 === 47) //"back"
+	{
+		cursorDevice.selectPrevious();
+	}
+	else if (data1 === 48) //"forward"
+	{
+		cursorDevice.selectNext();
+	}
+	else if (data1 === 49 && data2 == 127) //"loop"
+	{
+		cursorDevice.previousParameterPage();
+	}
+	else if (data1 === 44 && data2 == 127) //"record"
+	{
+		cursorDevice.nextParameterPage();
+	}
+	else
+	{
+		//Update non-8 mapping if any
+		userControls.getControl(data1).set(data2, 128);
 	}
 }
 
@@ -105,20 +133,21 @@ function exit()
 }
 
 // Helper functions ----
-
-function isParamCC(cc)
+function messageIndex(list, message)
 {
-	return PARAM_CCs.indexOf(cc) != -1;
-}
+	var foundIndex = -1;
 
-function isMacroCC(channel, cc)
-{
-	return MACRO_CCs.indexOf([channel,cc]) != -1;
-}
+	for (var i = 0; i < list.length && foundIndex === -1; i++)
+	{
+		if (list[i][0] === message[0]
+			&& list[i][1] === message[1]
+			&& list[i][2] === message[2])
+		{
+			foundIndex = i;
+		}
+	}
 
-function isMapperCC(cc)
-{
-	return MAPPER_CCs.indexOf(cc) != -1;
+	return foundIndex;
 }
 
 function getMidiChannel(status)
