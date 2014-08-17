@@ -8,12 +8,25 @@ host.defineMidiPorts(1,1);	// One in, one out
 host.addDeviceNameBasedDiscoveryPair(["nanoKONTROL SLIDER/KNOB"], ["nanoKONTROL CTRL"]); //I have no idea if this works
 // No host.defineSysexIdentityReply because I don't know how to find the Sysex response to pass it
 
-//"8 knobs" CCs
 var PARAM_CCs = [
-14,
-15, 16, 17, 18, 19, 20, 21];	//Knobs
-var MACRO_CCs = [2, 3, 4, 5, 6, 8, 9, 12]; 			//Faders
-var MAPPER_CCs = [23, 24, 25, 26, 27, 28, 29, 30]	//Top row buttons
+14, 15, 16, 17, 
+18, 19, 20, 21
+];	//Knobs
+
+// var MACRO_CCs = [
+// 2, 3, 4, 5, 
+// 6, 8, 9, 12
+// ]; 	//Faders
+
+var MACRO_CCs = [
+[9,2], [9,3], [9,4], [9,5], 
+[9,6], [9,8], [9,9], [9,12]
+]; 	//Faders
+
+var MAPPER_CCs = [
+23, 24, 25, 26, 
+27, 28, 29, 30
+]	//Top row buttons
 
 
 function init()
@@ -40,6 +53,8 @@ function onMidi(status, data1, data2)
 {
 	println("onMidi(" + status + "," + data1 + "," + data2 +") Ch " + getMidiChannel(status));	//Debug out
 
+	var chan = getMidiChannel(status);
+
 	// TODO: filter by MIDI channel. Currently this just checks CC#.
 	if(isChannelController(status))
 	{
@@ -49,7 +64,7 @@ function onMidi(status, data1, data2)
 			var index = PARAM_CCs.indexOf(data1);
 			cursorDevice.getParameter(index).set(data2, 128);	
 		}
-		else if (isMacroCC(data1))
+		else if (isMacroCC(chan, data1))
 		{
 			//Update appropriate macro parameter
 			var index = MACRO_CCs.indexOf(data1);
@@ -96,9 +111,9 @@ function isParamCC(cc)
 	return PARAM_CCs.indexOf(cc) != -1;
 }
 
-function isMacroCC(cc)
+function isMacroCC(channel, cc)
 {
-	return MACRO_CCs.indexOf(cc) != -1;
+	return MACRO_CCs.indexOf([channel,cc]) != -1;
 }
 
 function isMapperCC(cc)
