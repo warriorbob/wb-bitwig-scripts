@@ -12,7 +12,7 @@ host.addDeviceNameBasedDiscoveryPair(["nanoKONTROL SLIDER/KNOB"], ["nanoKONTROL 
 var NOTE = 0;
 var CC = 1;
 
-var PARAM_CCs = [
+var PARAM_MESSAGES = [
 [CC,9,14],
 [CC,9,15],
 [CC,9,16],
@@ -23,7 +23,7 @@ var PARAM_CCs = [
 [CC,9,21]
 ];	//Knobs
 
-var MACRO_CCs = [
+var MACRO_MESSAGES = [
 [CC,9,2], 
 [CC,9,3],
 [CC,9,4],
@@ -34,7 +34,7 @@ var MACRO_CCs = [
 [CC,9,12]
 ]; 	//Faders
 
-var MAPPER_CCs = [
+var MAPPER_MESSAGES = [
 [CC,9,23],
 [CC,9,24],
 [CC,9,25],
@@ -83,9 +83,9 @@ function onMidi(status, data1, data2)
 
 	var midiMessage = [type, chan, data1];
 
-	var param_index = messageIndex(PARAM_CCs, midiMessage);
-	var macro_index = messageIndex(MACRO_CCs, midiMessage);
-	var mapper_index = messageIndex(MAPPER_CCs, midiMessage);
+	var param_index = messageIndex(PARAM_MESSAGES, midiMessage);
+	var macro_index = messageIndex(MACRO_MESSAGES, midiMessage);
+	var mapper_index = messageIndex(MAPPER_MESSAGES, midiMessage);
 
 	if(param_index != -1)
 	{
