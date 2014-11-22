@@ -112,11 +112,11 @@ function onMidi(status, data1, data2)
 		// but this isn't guaranteed to happen
 		cursorDevice.getMacro(mapper_index).getModulationSource().toggleIsMapping()
 	}
-	else if (data1 === 47)	//nK "back"
+	else if (data1 === 47 && data2 == 127)	//nK "back"
 	{
 		cursorDevice.selectPrevious();
 	}
-	else if (data1 === 48)	//nK "forward"
+	else if (data1 === 48 && data2 == 127)	//nK "forward"
 	{
 		cursorDevice.selectNext();
 	}
