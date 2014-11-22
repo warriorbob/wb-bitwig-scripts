@@ -15,6 +15,8 @@ var CC = 1;
 // This script will use these mappings to interpret input from the controller.
 // Format is [TYPE, CHANNEL, MESSAGENUMBER]
 // "Type" is one of the above enums, so "NOTE" or "CC".
+
+// Device parameter control (the colored ones that move with the bank)
 var PARAM_MESSAGES = [
 [CC,9,14],
 [CC,9,15],
@@ -26,6 +28,8 @@ var PARAM_MESSAGES = [
 [CC,9,21]
 ];	//Knobs
 
+
+// Device macro control
 var MACRO_MESSAGES = [
 [CC,9,2], 
 [CC,9,3],
@@ -37,6 +41,7 @@ var MACRO_MESSAGES = [
 [CC,9,12]
 ]; 	//Faders
 
+// Device macro assignment buttons
 var MAPPER_MESSAGES = [
 [CC,9,23],
 [CC,9,24],
