@@ -26,7 +26,7 @@ var PARAM_MESSAGES = [
 [CC,9,19],
 [CC,9,20],
 [CC,9,21]
-];	//Knobs
+];	//nK top knobs
 
 
 // Device macro control
@@ -39,7 +39,7 @@ var MACRO_MESSAGES = [
 [CC,9,8],
 [CC,9,9],
 [CC,9,12]
-]; 	//Faders
+]; 	// nK Faders
 
 // Device macro assignment buttons
 var MAPPER_MESSAGES = [
@@ -51,7 +51,7 @@ var MAPPER_MESSAGES = [
 [CC,9,28],
 [CC,9,29],
 [CC,9,30]
-]	//Top row buttons
+]	//nK top row buttons
 
 
 function init()
@@ -95,36 +95,36 @@ function onMidi(status, data1, data2)
 	var macro_index = messageIndex(MACRO_MESSAGES, midiMessage);
 	var mapper_index = messageIndex(MAPPER_MESSAGES, midiMessage);
 
-	if(param_index != -1)
+	if(param_index != -1)	// If the message for a device parameter
 	{
 		//Update appropriate device parameter
 		cursorDevice.getParameter(param_index).set(data2, 128);
 	}
-	else if (macro_index != -1)
+	else if (macro_index != -1)		// If the message is for a macro knob
 	{
 		//Update appropriate macro parameter
 		cursorDevice.getMacro(macro_index).getAmount().set(data2, 128);
 	}
-	else if (mapper_index != -1)
+	else if (mapper_index != -1)	// If the message is for a macro mapping button
 	{
 		//Toggle appropriate macro modulation source
 		// TODO: fix "toggle" confusion - right now it assumes that you get one call on press and another on unpress,
 		// but this isn't guaranteed to happen
 		cursorDevice.getMacro(mapper_index).getModulationSource().toggleIsMapping()
 	}
-	else if (data1 === 47) //"back"
+	else if (data1 === 47)	//nK "back"
 	{
 		cursorDevice.selectPrevious();
 	}
-	else if (data1 === 48) //"forward"
+	else if (data1 === 48)	//nK "forward"
 	{
 		cursorDevice.selectNext();
 	}
-	else if (data1 === 49 && data2 == 127) //"loop"
+	else if (data1 === 49 && data2 == 127)	//nK "loop"
 	{
 		cursorDevice.previousParameterPage();
 	}
-	else if (data1 === 44 && data2 == 127) //"record"
+	else if (data1 === 44 && data2 == 127)	//nK "record"
 	{
 		cursorDevice.nextParameterPage();
 	}
@@ -141,6 +141,7 @@ function exit()
 }
 
 // Helper functions ----
+
 function messageIndex(list, message)
 {
 	var foundIndex = -1;
