@@ -53,6 +53,11 @@ var MAPPER_MESSAGES = [
 [CC,9,30]
 ]	//nK top row buttons
 
+// Navigation controls
+var DEVICE_PREV = [CC,9,47];	//nK "back"
+var DEVICE_NEXT = [CC,9,48];	//nK "forward"
+var PARAM_PREV = [CC,9,49];		//nK "loop"
+var PARAM_NEXT = [CC,9,44];		//nK "record"
 
 function init()
 {
@@ -112,19 +117,19 @@ function onMidi(status, data1, data2)
 		// but this isn't guaranteed to happen
 		cursorDevice.getMacro(mapper_index).getModulationSource().toggleIsMapping()
 	}
-	else if (data1 === 47 && data2 == 127)	//nK "back"
+	else if (messageCompare(midiMessage, DEVICE_PREV) && data2 == 127)
 	{
 		cursorDevice.selectPrevious();
 	}
-	else if (data1 === 48 && data2 == 127)	//nK "forward"
+	else if (messageCompare(midiMessage, DEVICE_NEXT) && data2 == 127)
 	{
 		cursorDevice.selectNext();
 	}
-	else if (data1 === 49 && data2 == 127)	//nK "loop"
+	else if (messageCompare(midiMessage, PARAM_PREV) && data2 == 127)
 	{
 		cursorDevice.previousParameterPage();
 	}
-	else if (data1 === 44 && data2 == 127)	//nK "record"
+	else if (messageCompare(midiMessage, PARAM_NEXT) && data2 == 127)
 	{
 		cursorDevice.nextParameterPage();
 	}
@@ -157,6 +162,18 @@ function messageIndex(list, message)
 	}
 
 	return foundIndex;
+}
+
+function messageCompare(msg1, msg2)
+{
+	var possibleMatch = true;
+
+	for (var i = 0; i < msg1.length && possibleMatch == true; i++)
+	{
+		possibleMatch = msg1[i] == msg2[i];
+	}
+
+	return possibleMatch;
 }
 
 function getMidiChannel(status)
