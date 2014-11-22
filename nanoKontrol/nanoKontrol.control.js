@@ -12,6 +12,9 @@ host.addDeviceNameBasedDiscoveryPair(["nanoKONTROL SLIDER/KNOB"], ["nanoKONTROL 
 var NOTE = 0;
 var CC = 1;
 
+// This script will use these mappings to interpret input from the controller.
+// Format is [TYPE, CHANNEL, MESSAGENUMBER]
+// "Type" is one of the above enums, so "NOTE" or "CC".
 var PARAM_MESSAGES = [
 [CC,9,14],
 [CC,9,15],
